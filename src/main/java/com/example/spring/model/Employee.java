@@ -1,15 +1,28 @@
 package com.example.spring.model;
 
+import java.util.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.example.spring.request.EmployeeRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -22,23 +35,54 @@ public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+
 	private Long id;
 
-	@Column(name = "name")
+	@NotEmpty(message = "Name should not be null")
 	private String name;
 
-	@Column(name = "age")
-	private Long age;
+	private Long age = 0L;
 
-	@Column(name = "location")
 	private String location;
 
-	@Column(name = "email")
+	@Email(message = "please enter valid email address")
 	private String email;
 
-	@Column(name = "department")
-	private String department;
+	@JoinColumn(name = "department_id")
+	@OneToOne
+	private Department department;
+
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private Date createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private Date updatedAt;
+	
+	public Employee() {
+		
+	}
+
+	public Employee(EmployeeRequest req) {
+		this.name = req.getName();
+	}
+
+	public Date getUpdateAt() {
+		return updatedAt;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long Id) {
+		this.id = Id;
+	}
 
 	public String getName() {
 		return name;
@@ -72,11 +116,11 @@ public class Employee {
 		this.email = email;
 	}
 
-	public String getDepartment() {
+	public Department getDepartment() {
 		return department;
 	}
 
-	public void setDepartment(String department) {
+	public void setDepartment(Department department) {
 		this.department = department;
 	}
 
